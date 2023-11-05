@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - copymangas
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build_individual:
+    name: Build copymangas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: adopt
+
+      - name: Build extension
+        uses: gradle/gradle-command-action@v2
+        env:
+          CI_MULTISRC: "false"
+        with:
+          arguments: assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: "copymangas-apk"
+          path: "**/*.apk"
+          retention-days: 1
